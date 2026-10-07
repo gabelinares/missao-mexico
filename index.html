@@ -150,6 +150,8 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
 .place iframe.wide{aspect-ratio:16/9}
 .place .ph{height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#c9cbe0;font:600 14px "Nunito",sans-serif;
   background:var(--deep);background-image:radial-gradient(rgba(255,255,255,.3) 1px,transparent 1.5px);background-size:22px 22px}
+.place .ph.foto{height:200px;background-size:cover;background-position:center}
+.place .ph.foto .spr,.place .ph.foto span{display:none}
 .place .ext{display:flex;align-items:center;justify-content:center;height:96px;color:#fff;font:800 17px "Nunito",sans-serif;text-decoration:none;background:var(--deep)}
 .place .info{display:flex;gap:12px;align-items:flex-start;padding:14px 16px 16px}
 .place .info > div{flex:1}
@@ -322,20 +324,20 @@ const LISTAS={
    ====================================================== */
 const WHATSAPP="";
 const LUGARES=[
-  {id:"basilica",tipo:"fe",icon:"basilica",nome:"Basílica de Guadalupe",texto:"Onde fica a tilma de São Juan Diego com a imagem da Virgem. Dá pra levar itens pra serem abençoados.",video:""},
-  {id:"zocalo",tipo:"fe",icon:"cross",nome:"Zócalo e Catedral",texto:"A praça central, com a Catedral Metropolitana e o Palácio Nacional.",video:""},
-  {id:"ofrendas",tipo:"fe",icon:"candleA",nome:"Altares do Día de Muertos",quando:"1 e 2/nov",texto:"A cidade inteira enfeitada com altares, velas e flores de cempasúchil.",video:""},
-  {id:"mixquic",tipo:"fe",icon:"candleA",nome:"Mixquic",quando:"Noite de 1/nov",texto:"Vila onde as famílias passam a noite no cemitério com velas e orações. Fica longe do centro.",video:""},
-  {id:"templo",tipo:"cultura",icon:"pyramid",nome:"Templo Mayor",texto:"Ruínas do templo asteca, ao lado da Catedral.",video:""},
-  {id:"bellas",tipo:"cultura",icon:"basilica",nome:"Palacio de Bellas Artes",texto:"Prédio lindo, com murais e apresentações de balé folclórico.",video:""},
-  {id:"antropologia",tipo:"cultura",icon:"sun",nome:"Museu de Antropologia",texto:"O museu mais famoso do México, com a Pedra do Sol asteca.",video:""},
-  {id:"coyoacan",tipo:"passeio",icon:"flower",nome:"Coyoacán e Casa Azul",texto:"Bairro colonial com praça e igrejinha. A casa da Frida Kahlo precisa de ingresso antecipado.",video:""},
-  {id:"chapultepec",tipo:"passeio",icon:"cactus",nome:"Castelo de Chapultepec",texto:"Castelo no alto de um parque enorme, com vista da cidade.",video:""},
-  {id:"xochimilco",tipo:"passeio",icon:"boat",nome:"Xochimilco",texto:"Barquinhos coloridos pelos canais, com mariachis.",video:""},
-  {id:"teotihuacan",tipo:"passeio",icon:"pyramid",nome:"Pirâmides de Teotihuacan",quando:"Dia inteiro",texto:"As pirâmides do Sol e da Lua, a uma hora da cidade. Muita escada e sol.",video:""},
-  {id:"torre",tipo:"passeio",icon:"plane",nome:"Torre Latinoamericana",texto:"Mirante com a cidade inteira lá embaixo.",video:""},
-  {id:"roma",tipo:"passeio",icon:"flower",nome:"Roma e Condesa",texto:"Bairros arborizados com cafés e praças, bons pra caminhar.",video:""},
-  {id:"comida",tipo:"comida",icon:"taco",nome:"Mercados e comidas",texto:"Tacos, tamales, chocolate quente e pan de muerto, que só tem nessa época.",video:""}
+  {id:"basilica",wiki:"Basilica_of_Our_Lady_of_Guadalupe",tipo:"fe",icon:"basilica",nome:"Basílica de Guadalupe",texto:"Onde fica a tilma de São Juan Diego com a imagem da Virgem. Dá pra levar itens pra serem abençoados.",video:""},
+  {id:"zocalo",wiki:"Zócalo",tipo:"fe",icon:"cross",nome:"Zócalo e Catedral",texto:"A praça central, com a Catedral Metropolitana e o Palácio Nacional.",video:""},
+  {id:"ofrendas",wiki:"Day_of_the_Dead",tipo:"fe",icon:"candleA",nome:"Altares do Día de Muertos",quando:"1 e 2/nov",texto:"A cidade inteira enfeitada com altares, velas e flores de cempasúchil.",video:""},
+  {id:"mixquic",wiki:"Mixquic",tipo:"fe",icon:"candleA",nome:"Mixquic",quando:"Noite de 1/nov",texto:"Vila onde as famílias passam a noite no cemitério com velas e orações. Fica longe do centro.",video:""},
+  {id:"templo",wiki:"Templo_Mayor",tipo:"cultura",icon:"pyramid",nome:"Templo Mayor",texto:"Ruínas do templo asteca, ao lado da Catedral.",video:""},
+  {id:"bellas",wiki:"Palacio_de_Bellas_Artes",tipo:"cultura",icon:"basilica",nome:"Palacio de Bellas Artes",texto:"Prédio lindo, com murais e apresentações de balé folclórico.",video:""},
+  {id:"antropologia",wiki:"National_Museum_of_Anthropology_(Mexico)",tipo:"cultura",icon:"sun",nome:"Museu de Antropologia",texto:"O museu mais famoso do México, com a Pedra do Sol asteca.",video:""},
+  {id:"coyoacan",wiki:"Coyoacán",tipo:"passeio",icon:"flower",nome:"Coyoacán e Casa Azul",texto:"Bairro colonial com praça e igrejinha. A casa da Frida Kahlo precisa de ingresso antecipado.",video:""},
+  {id:"chapultepec",wiki:"Chapultepec_Castle",tipo:"passeio",icon:"cactus",nome:"Castelo de Chapultepec",texto:"Castelo no alto de um parque enorme, com vista da cidade.",video:""},
+  {id:"xochimilco",wiki:"Xochimilco",tipo:"passeio",icon:"boat",nome:"Xochimilco",texto:"Barquinhos coloridos pelos canais, com mariachis.",video:""},
+  {id:"teotihuacan",wiki:"Teotihuacan",tipo:"passeio",icon:"pyramid",nome:"Pirâmides de Teotihuacan",quando:"Dia inteiro",texto:"As pirâmides do Sol e da Lua, a uma hora da cidade. Muita escada e sol.",video:""},
+  {id:"torre",wiki:"Torre_Latinoamericana",tipo:"passeio",icon:"plane",nome:"Torre Latinoamericana",texto:"Mirante com a cidade inteira lá embaixo.",video:""},
+  {id:"roma",wiki:"Colonia_Roma",tipo:"passeio",icon:"flower",nome:"Roma e Condesa",texto:"Bairros arborizados com cafés e praças, bons pra caminhar.",video:""},
+  {id:"comida",wiki:"Mexican_cuisine",tipo:"comida",icon:"taco",nome:"Mercados e comidas",texto:"Tacos, tamales, chocolate quente e pan de muerto, que só tem nessa época.",video:""}
 ];
 const TIPOS={todos:"Todos",fe:"Fé",passeio:"Passeios",cultura:"História",comida:"Comida"};
 const QUEM={gab:"Gabriel",mae:"Mãe",nos:"Nós dois"};
@@ -840,13 +842,25 @@ document.querySelectorAll("[data-list]").forEach(el=>{
 let filtro="todos";
 function midia(l){
   const v=(l.video||"").trim();
-  if(!v) return `<div class="ph">${spr(l.icon,4)}<span>Vídeo em breve</span></div>`;
+  if(!v) return `<div class="ph" ${l.wiki?`data-wiki="${l.wiki}"`:""}>${spr(l.icon,4)}<span>Vídeo em breve</span></div>`;
   const yt=v.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
   if(yt){const wide=!/shorts\//.test(v);
     return `<iframe class="${wide?"wide":""}" src="https://www.youtube-nocookie.com/embed/${yt[1]}?playsinline=1&rel=0" title="${l.nome}" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`}
   if(/\.(mp4|webm|m4v|mov)(\?|#|$)/i.test(v))
     return `<video src="${v}#t=0.1" controls playsinline preload="metadata"></video>`;
   return `<a class="ext" href="${v}" target="_blank" rel="noopener">▶ Ver o vídeo</a>`;
+}
+const FOTOS=(()=>{try{return JSON.parse(localStorage.getItem("fotos")||"{}")}catch(e){return{}}})();
+function fotoPut(el,url){el.style.backgroundImage=`url("${url}")`;el.classList.add("foto")}
+function fotos(root){
+  root.querySelectorAll(".ph[data-wiki]").forEach(el=>{
+    const t=el.dataset.wiki;
+    if(FOTOS[t]) return fotoPut(el,FOTOS[t]);
+    fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(t)).then(r=>r.json()).then(d=>{
+      const u=d.thumbnail&&d.thumbnail.source;if(!u) return;
+      FOTOS[t]=u;try{localStorage.setItem("fotos",JSON.stringify(FOTOS))}catch(e){}
+      fotoPut(el,u)}).catch(()=>{});
+  });
 }
 function renderChips(){
   const box=document.getElementById("chips");
@@ -865,6 +879,7 @@ function renderLugares(){
         <h3>${l.nome}</h3><p>${l.texto}</p></div>
         <button type="button" class="love ${on?"on":""}" data-l="${l.id}" aria-pressed="${on}" aria-label="Quero ir: ${l.nome}">${spr("heart",4)}</button>
       </div></article>`}).join("");
+  fotos(box);
   box.querySelectorAll(".love").forEach(b=>b.addEventListener("click",()=>{
     const k="l_"+b.dataset.l;state[k]=!state[k];save(k);renderLugares();renderPick()}));
 }
