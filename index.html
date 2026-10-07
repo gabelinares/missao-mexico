@@ -150,8 +150,8 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
 .place iframe.wide{aspect-ratio:16/9}
 .place .ph{height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#c9cbe0;font:600 14px "Nunito",sans-serif;
   background:var(--deep);background-image:radial-gradient(rgba(255,255,255,.3) 1px,transparent 1.5px);background-size:22px 22px}
-.place .ph.foto{height:200px;background-size:cover;background-position:center}
-.place .ph.foto .spr,.place .ph.foto span{display:none}
+.place .ph.foto{position:relative;height:200px;overflow:hidden}
+.place .ph.foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .place .ext{display:flex;align-items:center;justify-content:center;height:96px;color:#fff;font:800 17px "Nunito",sans-serif;text-decoration:none;background:var(--deep)}
 .place .info{display:flex;gap:12px;align-items:flex-start;padding:14px 16px 16px}
 .place .info > div{flex:1}
@@ -162,11 +162,10 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
 .love{flex:none;width:52px;height:52px;border:2px solid var(--ink);border-radius:50%;background:#fff;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .love svg{opacity:.25;filter:grayscale(1)}
 .love.on{background:#ffe0ef;border-color:var(--pink)}
+.love.like.on{background:#fff0c2;border-color:var(--ink)}
+.votes{display:flex;flex-direction:column;gap:8px}
 .love.on svg{opacity:1;filter:none}
 .place.chosen{border-color:var(--pink);box-shadow:3px 3px 0 var(--pink)}
-.pick{padding:14px 16px;text-align:center;background:#fff6d6;position:sticky;bottom:calc(74px + env(safe-area-inset-bottom));z-index:5}
-.pick p{font-weight:700;font-size:16px}
-.pick a{display:block;margin-top:10px;background:#25a35a;color:#fff;font:800 17px "Nunito",sans-serif;text-decoration:none;padding:12px;border-radius:4px;border:2px solid var(--ink)}
 .end{margin-top:40px;padding:22px 18px;text-align:center}
 .end .pixel{font-size:11px;color:var(--pink);margin:12px 0 6px}
 .foot{text-align:center;font-family:"PS2P";font-size:8px;color:var(--soft);margin-top:24px;line-height:1.9}
@@ -232,7 +231,6 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
     <p class="lead">Veja os vídeos e toque no coração do que quiser fazer.</p>
     <div class="chips" id="chips"></div>
     <div id="lugares"></div>
-    <div class="card pick" id="pick"></div>
   </section>
 
   </div>
@@ -319,25 +317,22 @@ const LISTAS={
    (ex: "videos/basilica.mp4"), link do YouTube, ou
    qualquer outro link (Instagram, TikTok, Drive), que
    vira um botão. Vazio = "vídeo em breve".
-   WHATSAPP: seu número com DDI, só dígitos
-   (ex: "5512999999999"). Vazio = ela escolhe o contato.
    ====================================================== */
-const WHATSAPP="";
 const LUGARES=[
-  {id:"basilica",wiki:"Basilica_of_Our_Lady_of_Guadalupe",tipo:"fe",icon:"basilica",nome:"Basílica de Guadalupe",texto:"Onde fica a tilma de São Juan Diego com a imagem da Virgem. Dá pra levar itens pra serem abençoados.",video:""},
-  {id:"zocalo",wiki:"Zócalo",tipo:"fe",icon:"cross",nome:"Zócalo e Catedral",texto:"A praça central, com a Catedral Metropolitana e o Palácio Nacional.",video:""},
-  {id:"ofrendas",wiki:"Day_of_the_Dead",tipo:"fe",icon:"candleA",nome:"Altares do Día de Muertos",quando:"1 e 2/nov",texto:"A cidade inteira enfeitada com altares, velas e flores de cempasúchil.",video:""},
-  {id:"mixquic",wiki:"Mixquic",tipo:"fe",icon:"candleA",nome:"Mixquic",quando:"Noite de 1/nov",texto:"Vila onde as famílias passam a noite no cemitério com velas e orações. Fica longe do centro.",video:""},
-  {id:"templo",wiki:"Templo_Mayor",tipo:"cultura",icon:"pyramid",nome:"Templo Mayor",texto:"Ruínas do templo asteca, ao lado da Catedral.",video:""},
-  {id:"bellas",wiki:"Palacio_de_Bellas_Artes",tipo:"cultura",icon:"basilica",nome:"Palacio de Bellas Artes",texto:"Prédio lindo, com murais e apresentações de balé folclórico.",video:""},
-  {id:"antropologia",wiki:"National_Museum_of_Anthropology_(Mexico)",tipo:"cultura",icon:"sun",nome:"Museu de Antropologia",texto:"O museu mais famoso do México, com a Pedra do Sol asteca.",video:""},
-  {id:"coyoacan",wiki:"Coyoacán",tipo:"passeio",icon:"flower",nome:"Coyoacán e Casa Azul",texto:"Bairro colonial com praça e igrejinha. A casa da Frida Kahlo precisa de ingresso antecipado.",video:""},
-  {id:"chapultepec",wiki:"Chapultepec_Castle",tipo:"passeio",icon:"cactus",nome:"Castelo de Chapultepec",texto:"Castelo no alto de um parque enorme, com vista da cidade.",video:""},
-  {id:"xochimilco",wiki:"Xochimilco",tipo:"passeio",icon:"boat",nome:"Xochimilco",texto:"Barquinhos coloridos pelos canais, com mariachis.",video:""},
-  {id:"teotihuacan",wiki:"Teotihuacan",tipo:"passeio",icon:"pyramid",nome:"Pirâmides de Teotihuacan",quando:"Dia inteiro",texto:"As pirâmides do Sol e da Lua, a uma hora da cidade. Muita escada e sol.",video:""},
-  {id:"torre",wiki:"Torre_Latinoamericana",tipo:"passeio",icon:"plane",nome:"Torre Latinoamericana",texto:"Mirante com a cidade inteira lá embaixo.",video:""},
-  {id:"roma",wiki:"Colonia_Roma",tipo:"passeio",icon:"flower",nome:"Roma e Condesa",texto:"Bairros arborizados com cafés e praças, bons pra caminhar.",video:""},
-  {id:"comida",wiki:"Mexican_cuisine",tipo:"comida",icon:"taco",nome:"Mercados e comidas",texto:"Tacos, tamales, chocolate quente e pan de muerto, que só tem nessa época.",video:""}
+  {id:"basilica",img:"https://image.shutterstock.com/z/stock-photo-basilica-of-our-lady-of-guadalupe-mexico-city-1928237762.jpg",tipo:"fe",icon:"basilica",nome:"Basílica de Guadalupe",texto:"Onde fica a tilma de São Juan Diego com a imagem da Virgem. Dá pra levar itens pra serem abençoados.",video:""},
+  {id:"zocalo",img:"https://image.shutterstock.com/z/stock-photo-zocalo-square-and-metropolitan-cathedral-mexico-city-mexico-2732083633.jpg",tipo:"fe",icon:"cross",nome:"Zócalo e Catedral",texto:"A praça central, com a Catedral Metropolitana e o Palácio Nacional.",video:""},
+  {id:"ofrendas",img:"https://image.shutterstock.com/z/stock-photo-candles-with-cempasuchil-orange-flowers-or-marigold-tagetes-erecta-and-papel-picado-decoration-2064484919.jpg",tipo:"fe",icon:"candleA",nome:"Altares do Día de Muertos",quando:"1 e 2/nov",texto:"A cidade inteira enfeitada com altares, velas e flores de cempasúchil.",video:""},
+  {id:"mixquic",img:"https://image.shutterstock.com/z/stock-photo-day-of-the-dead-in-mixquic-mexico-city-marigold-flowers-candles-and-graves-in-a-twilight-2632481271.jpg",tipo:"fe",icon:"candleA",nome:"Mixquic",quando:"Noite de 1/nov",texto:"Vila onde as famílias passam a noite no cemitério com velas e orações. Fica longe do centro.",video:""},
+  {id:"templo",img:"https://image.shutterstock.com/z/stock-photo-ruins-of-the-ancient-templo-mayor-aztec-pyramid-in-mexico-city-mexico-2318985417.jpg",tipo:"cultura",icon:"pyramid",nome:"Templo Mayor",texto:"Ruínas do templo asteca, ao lado da Catedral.",video:""},
+  {id:"bellas",img:"https://image.shutterstock.com/z/stock-photo-palacio-de-bellas-artes-palace-of-fine-arts-mexico-city-2087456887.jpg",tipo:"cultura",icon:"basilica",nome:"Palacio de Bellas Artes",texto:"Prédio lindo, com murais e apresentações de balé folclórico.",video:""},
+  {id:"antropologia",img:"https://image.shutterstock.com/z/stock-photo-archeological-aztec-sun-calendar-the-aztec-calendar-stone-was-made-by-the-mexica-culture-in-mexico-399520261.jpg",tipo:"cultura",icon:"sun",nome:"Museu de Antropologia",texto:"O museu mais famoso do México, com a Pedra do Sol asteca.",video:""},
+  {id:"coyoacan",img:"https://image.shutterstock.com/z/stock-photo-frida-kahlo-museum-also-known-as-the-blue-house-casa-azul-at-the-morning-in-coyoacan-mexico-2339449201.jpg",tipo:"passeio",icon:"flower",nome:"Coyoacán e Casa Azul",texto:"Bairro colonial com praça e igrejinha. A casa da Frida Kahlo precisa de ingresso antecipado.",video:""},
+  {id:"chapultepec",img:"https://image.shutterstock.com/z/stock-photo-national-museum-of-history-chapultepec-castle-in-mexico-city-mexico-2465575697.jpg",tipo:"passeio",icon:"cactus",nome:"Castelo de Chapultepec",texto:"Castelo no alto de um parque enorme, com vista da cidade.",video:""},
+  {id:"xochimilco",img:"https://image.shutterstock.com/z/stock-photo-colorful-trajinera-boat-gliding-through-the-serene-canals-of-xochimilco-mexico-2634915653.jpg",tipo:"passeio",icon:"boat",nome:"Xochimilco",texto:"Barquinhos coloridos pelos canais, com mariachis.",video:""},
+  {id:"teotihuacan",img:"https://image.shutterstock.com/z/stock-photo-avenue-of-dead-and-sun-pyramid-temple-of-sun-teotihuacan-mexico-city-mexico-2573881875.jpg",tipo:"passeio",icon:"pyramid",nome:"Pirâmides de Teotihuacan",quando:"Dia inteiro",texto:"As pirâmides do Sol e da Lua, a uma hora da cidade. Muita escada e sol.",video:""},
+  {id:"torre",img:"https://image.shutterstock.com/z/stock-photo-scenic-panoramic-view-of-mexico-city-center-from-the-observation-deck-at-the-top-of-latin-american-1664977738.jpg",tipo:"passeio",icon:"plane",nome:"Torre Latinoamericana",texto:"Mirante com a cidade inteira lá embaixo.",video:""},
+  {id:"roma",img:"https://image.shutterstock.com/z/stock-photo-a-leafy-green-tree-lined-pedestrian-median-of-the-streets-of-the-trendy-la-condesa-neighborhood-in-2568864713.jpg",tipo:"passeio",icon:"flower",nome:"Roma e Condesa",texto:"Bairros arborizados com cafés e praças, bons pra caminhar.",video:""},
+  {id:"comida",img:"https://image.shutterstock.com/z/stock-photo-al-pastor-street-tacos-served-in-an-authentic-mexican-restaurant-spicy-pork-tacos-topped-with-1728225859.jpg",tipo:"comida",icon:"taco",nome:"Mercados e comidas",texto:"Tacos, tamales, chocolate quente e pan de muerto, que só tem nessa época.",video:""}
 ];
 const TIPOS={todos:"Todos",fe:"Fé",passeio:"Passeios",cultura:"História",comida:"Comida"};
 const QUEM={gab:"Gabriel",mae:"Mãe",nos:"Nós dois"};
@@ -541,6 +536,17 @@ medkit:[
 "kwwwwRRwwwwk",
 "kwwwwwwwwwwk",
 "kkkkkkkkkkkk"],
+thumb:[
+"....kk....",
+"...kyk....",
+"...kyk....",
+"kk.kyykkk.",
+"kyykyyyyyk",
+"kyyyyyyyyk",
+"kyyyyyyyyk",
+"kyyyyyyyyk",
+".kyyyyyyk.",
+"..kkkkkk.."],
 heart:[
 ".kk.kk.",
 "kppkppk",
@@ -768,7 +774,7 @@ async function pull(){
   }catch(e){setSync(false)}
 }
 const listRefresh=[];
-function syncUI(){renderFases();listRefresh.forEach(f=>f());renderLugares();renderPick()}
+function syncUI(){renderFases();listRefresh.forEach(f=>f());renderLugares()}
 
 /* ---------- dates ---------- */
 function todayISO(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}catch(e){return new Date().toISOString().slice(0,10)}}
@@ -842,25 +848,13 @@ document.querySelectorAll("[data-list]").forEach(el=>{
 let filtro="todos";
 function midia(l){
   const v=(l.video||"").trim();
-  if(!v) return `<div class="ph" ${l.wiki?`data-wiki="${l.wiki}"`:""}>${spr(l.icon,4)}<span>Vídeo em breve</span></div>`;
+  if(!v) return `<div class="ph ${l.img?"foto":""}">${spr(l.icon,4)}<span>Vídeo em breve</span>${l.img?`<img src="${l.img}" alt="${l.nome}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`;
   const yt=v.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
   if(yt){const wide=!/shorts\//.test(v);
     return `<iframe class="${wide?"wide":""}" src="https://www.youtube-nocookie.com/embed/${yt[1]}?playsinline=1&rel=0" title="${l.nome}" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`}
   if(/\.(mp4|webm|m4v|mov)(\?|#|$)/i.test(v))
     return `<video src="${v}#t=0.1" controls playsinline preload="metadata"></video>`;
   return `<a class="ext" href="${v}" target="_blank" rel="noopener">▶ Ver o vídeo</a>`;
-}
-const FOTOS=(()=>{try{return JSON.parse(localStorage.getItem("fotos")||"{}")}catch(e){return{}}})();
-function fotoPut(el,url){el.style.backgroundImage=`url("${url}")`;el.classList.add("foto")}
-function fotos(root){
-  root.querySelectorAll(".ph[data-wiki]").forEach(el=>{
-    const t=el.dataset.wiki;
-    if(FOTOS[t]) return fotoPut(el,FOTOS[t]);
-    fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(t)).then(r=>r.json()).then(d=>{
-      const u=d.thumbnail&&d.thumbnail.source;if(!u) return;
-      FOTOS[t]=u;try{localStorage.setItem("fotos",JSON.stringify(FOTOS))}catch(e){}
-      fotoPut(el,u)}).catch(()=>{});
-  });
 }
 function renderChips(){
   const box=document.getElementById("chips");
@@ -871,27 +865,20 @@ function renderChips(){
 function renderLugares(){
   const box=document.getElementById("lugares");
   box.innerHTML=LUGARES.filter(l=>filtro==="todos"||l.tipo===filtro).map(l=>{
-    const on=!!state["l_"+l.id];
+    const on=!!state["l_"+l.id],gos=!!state["k_"+l.id];
     return `<article class="card place ${on?"chosen":""}">
       <div class="media">${midia(l)}</div>
       <div class="info"><div>
         <div class="tag">${TIPOS[l.tipo]}${l.quando?` · <em>${l.quando}</em>`:""}</div>
         <h3>${l.nome}</h3><p>${l.texto}</p></div>
-        <button type="button" class="love ${on?"on":""}" data-l="${l.id}" aria-pressed="${on}" aria-label="Quero ir: ${l.nome}">${spr("heart",4)}</button>
+        <div class="votes"><button type="button" class="love like ${gos?"on":""}" data-l="${l.id}" data-k="k_" aria-pressed="${gos}" aria-label="Gostei: ${l.nome}">${spr("thumb",4)}</button>
+        <button type="button" class="love ${on?"on":""}" data-l="${l.id}" data-k="l_" aria-pressed="${on}" aria-label="Quero muito ir: ${l.nome}">${spr("heart",4)}</button></div>
       </div></article>`}).join("");
-  fotos(box);
   box.querySelectorAll(".love").forEach(b=>b.addEventListener("click",()=>{
-    const k="l_"+b.dataset.l;state[k]=!state[k];save(k);renderLugares();renderPick()}));
+    const id=b.dataset.l,k=b.dataset.k+id,o=(b.dataset.k==="l_"?"k_":"l_")+id,v=!state[k];
+    state[k]=v;save(k);if(v&&state[o]){state[o]=false;save(o)}renderLugares()}));
 }
-function renderPick(){
-  const el=document.getElementById("pick"),esc=LUGARES.filter(l=>state["l_"+l.id]);
-  if(!esc.length){el.style.display="none";return}
-  el.style.display="";
-  const msg="Filho, esses são os passeios que eu quero fazer no México:\n"+esc.map(l=>"• "+l.nome).join("\n");
-  const url=(WHATSAPP?`https://wa.me/${WHATSAPP}`:"https://wa.me/")+"?text="+encodeURIComponent(msg);
-  el.innerHTML=`<p>${esc.length} ${esc.length===1?"passeio escolhido":"passeios escolhidos"} ♥</p><a href="${url}" target="_blank" rel="noopener">Mandar pro Gabriel no WhatsApp</a>`;
-}
-renderChips();renderLugares();renderPick();
+renderChips();renderLugares();
 
 /* ---------- navegação ---------- */
 const PAGES=["inicio","listas","passeios","saber"];
