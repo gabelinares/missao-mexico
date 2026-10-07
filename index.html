@@ -780,11 +780,11 @@ function syncUI(){renderFases();listRefresh.forEach(f=>f());renderLugares()}
 
 /* ---------- dates ---------- */
 function todayISO(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}catch(e){return new Date().toISOString().slice(0,10)}}
-const HOJE=todayISO();
+let HOJE=todayISO();
 const toD=s=>{const[a,b,c]=s.split("-").map(Number);return Date.UTC(a,b-1,c)};
 const diff=(a,b)=>Math.round((toD(b)-toD(a))/864e5);
 
-(function(){
+function renderCount(){
   const d=diff(HOJE,"2026-10-28"),back=diff(HOJE,"2026-11-04"),cd=document.getElementById("cd"),cdl=document.getElementById("cdl");
   const sub="<br>Ida qua 28/out · volta qua 4/nov";
   if(d>1){cd.textContent=d;cdl.innerHTML="<b>dias pra decolar</b>"+sub}
@@ -792,7 +792,8 @@ const diff=(a,b)=>Math.round((toD(b)-toD(a))/864e5);
   else if(d===0){cd.textContent="✈";cdl.innerHTML="<b>É hoje! Boa viagem</b>"}
   else if(back>=0){cd.textContent=1-d;cdl.innerHTML="<b>º dia no México</b>"}
   else{cd.textContent="♥";cdl.innerHTML="<b>Missão cumprida</b>"}
-})();
+}
+renderCount();
 
 /* ---------- phases ---------- */
 const isDone=f=>state["f_"+f.id]!==undefined?state["f_"+f.id]:f.feito;
@@ -896,8 +897,8 @@ pull();setInterval(pull,15000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
 
 /* ---------- calendar ---------- */
-(function(){
-  const cal=document.getElementById("cal");
+function renderCal(){
+  const cal=document.getElementById("cal");cal.innerHTML="";
   ["S","T","Q","Q","S","S","D"].forEach(d=>cal.insertAdjacentHTML("beforeend",`<div class="dow">${d}</div>`));
   const mark={"2026-10-14":"suitcase","2026-10-26":"bus","2026-10-28":"plane","2026-11-01":"candleA","2026-11-04":"heart"};
   for(let i=0;i<35;i++){
@@ -908,7 +909,14 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
     const m=mark[iso]?`<span class="ic">${spr(mark[iso],mark[iso]==="plane"?.9:1.2)}</span>`:"";
     cal.insertAdjacentHTML("beforeend",`<div class="${c}">${dt.getUTCDate()}${m}</div>`);
   }
-})();
+}
+renderCal();
+function virouDia(){
+  const h=todayISO();if(h===HOJE)return;
+  HOJE=h;renderCount();renderCal();paint(document.getElementById("cal"));
+}
+setInterval(virouDia,60000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)virouDia()});
 
 /* ---------- papel picado ---------- */
 (function(){
