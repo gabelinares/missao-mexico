@@ -908,13 +908,20 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
 
 /* ---------- papel picado ---------- */
 (function(){
-  const svg=document.getElementById("picado"),W=400,n=8,w=W/n,cols=["#e4007c","#ffb703","#0a9396","#fb8500","#2a9d8f","#1d3557"];
-  svg.setAttribute("viewBox",`0 0 ${W} 42`);svg.setAttribute("preserveAspectRatio","none");
-  let h=`<line x1="0" y1="4" x2="${W}" y2="4" stroke="#2b2d42" stroke-width="2"/>`;
-  for(let i=0;i<n;i++){const x=i*w+3,ww=w-6,c=cols[i%cols.length];
-    h+=`<path d="M${x} 4H${x+ww}V30L${x+ww*.75} 37L${x+ww/2} 30L${x+ww/4} 37L${x} 30Z" fill="${c}" stroke="#2b2d42" stroke-width="1.5"/>`+
-       `<rect x="${x+ww/2-2}" y="9" width="4" height="12" fill="#fdf3e1"/><rect x="${x+ww/2-6}" y="13" width="12" height="4" fill="#fdf3e1"/>`}
-  svg.innerHTML=h;
+  const svg=document.getElementById("picado"),w=50,cols=["#e4007c","#ffb703","#0a9396","#fb8500","#2a9d8f","#1d3557"];
+  let last=0;
+  function draw(){
+    const n=Math.max(8,Math.round(document.documentElement.clientWidth/w));
+    if(n===last)return;last=n;
+    const W=n*w;
+    svg.setAttribute("viewBox",`0 0 ${W} 42`);svg.setAttribute("preserveAspectRatio","none");
+    let h=`<line x1="0" y1="4" x2="${W}" y2="4" stroke="#2b2d42" stroke-width="2"/>`;
+    for(let i=0;i<n;i++){const x=i*w+3,ww=w-6,c=cols[i%cols.length];
+      h+=`<path d="M${x} 4H${x+ww}V30L${x+ww*.75} 37L${x+ww/2} 30L${x+ww/4} 37L${x} 30Z" fill="${c}" stroke="#2b2d42" stroke-width="1.5"/>`+
+         `<rect x="${x+ww/2-2}" y="9" width="4" height="12" fill="#fdf3e1"/><rect x="${x+ww/2-6}" y="13" width="12" height="4" fill="#fdf3e1"/>`}
+    svg.innerHTML=h;
+  }
+  draw();window.addEventListener("resize",draw);
 })();
 paint(document);
 </script>
