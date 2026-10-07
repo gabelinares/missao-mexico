@@ -22,7 +22,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{background:var(--cream);color:var(--ink);font-family:"Nunito",system-ui,sans-serif;font-size:18px;line-height:1.5;min-height:100vh}
-.wrap{max-width:460px;margin:0 auto;padding:0 18px calc(40px + env(safe-area-inset-bottom))}
+.wrap{max-width:460px;margin:0 auto;padding:0 18px calc(96px + env(safe-area-inset-bottom))}
+.page{display:none}.page.on{display:block}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:center;background:var(--paper);border-top:2px solid var(--ink);padding-bottom:env(safe-area-inset-bottom)}
+.tabs a{flex:1;max-width:115px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:62px;color:var(--soft);text-decoration:none;font-size:12px;font-weight:800;-webkit-tap-highlight-color:transparent}
+.tabs a .spr{display:flex;height:24px;align-items:center;opacity:.45;filter:grayscale(1)}
+.tabs a.on{color:var(--pink);box-shadow:inset 0 -4px 0 var(--pink)}
+.tabs a.on .spr{opacity:1;filter:none}
 svg.px{display:block;shape-rendering:crispEdges}
 .pixel{font-family:"PS2P",monospace;letter-spacing:.3px;line-height:1.5}
 .card{background:var(--paper);border:2px solid var(--ink);border-radius:4px;box-shadow:3px 3px 0 var(--ink)}
@@ -156,7 +162,7 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
 .love.on{background:#ffe0ef;border-color:var(--pink)}
 .love.on svg{opacity:1;filter:none}
 .place.chosen{border-color:var(--pink);box-shadow:3px 3px 0 var(--pink)}
-.pick{padding:14px 16px;text-align:center;background:#fff6d6;position:sticky;bottom:calc(12px + env(safe-area-inset-bottom));z-index:5}
+.pick{padding:14px 16px;text-align:center;background:#fff6d6;position:sticky;bottom:calc(74px + env(safe-area-inset-bottom));z-index:5}
 .pick p{font-weight:700;font-size:16px}
 .pick a{display:block;margin-top:10px;background:#25a35a;color:#fff;font:800 17px "Nunito",sans-serif;text-decoration:none;padding:12px;border-radius:4px;border:2px solid var(--ink)}
 .end{margin-top:40px;padding:22px 18px;text-align:center}
@@ -167,6 +173,8 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
 <body>
 <svg class="picado" id="picado" aria-hidden="true"></svg>
 <main class="wrap">
+
+  <div class="page" id="inicio">
 
   <div class="card altar" aria-hidden="true">
     <div class="a spr" data-s="guadalupe" data-px="4" style="left:50%;top:12px;transform:translateX(-50%)"></div>
@@ -198,7 +206,10 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
     <div id="fases"></div>
   </section>
 
-  <section id="listas">
+  </div>
+
+  <div class="page" id="listas">
+  <section>
     <h2>O QUE VOCÊ JÁ TEM?</h2>
     <p class="lead">Marque o que já tem. O resto a gente compra.</p>
     <div class="card list" data-list="itens" data-mode="tem"><div class="hd"><span class="spr" data-s="bagshop" data-px="2"></span><h3>Itens da viagem</h3><span class="c"></span></div><div class="status"></div></div>
@@ -211,7 +222,10 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
         <div class="card list" data-list="mochila" data-mode="ok"><div class="hd"><span class="spr" data-s="bag" data-px="2"></span><h3>Mochila de mão</h3><span class="c"></span></div></div>
   </section>
 
-  <section id="passeios">
+  </div>
+
+  <div class="page" id="passeios">
+  <section>
     <h2>PASSEIOS</h2>
     <p class="lead">Veja os vídeos e toque no coração do que quiser fazer.</p>
     <div class="chips" id="chips"></div>
@@ -219,6 +233,9 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
     <div class="card pick" id="pick"></div>
   </section>
 
+  </div>
+
+  <div class="page" id="saber">
   <section>
     <h2>BOM SABER</h2>
         <details class="card acc"><summary><span class="spr" data-s="mountain" data-px="2"></span><span class="l">Altitude</span></summary>
@@ -247,7 +264,15 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
     <p>Qualquer dúvida, me chama. Te amo!<br><b>Gabriel</b></p>
   </div>
   <div class="foot">NOSSA SENHORA DE GUADALUPE,<br>ROGAI POR NÓS ✝</div>
+  </div>
 </main>
+
+<nav class="tabs" id="tabs" aria-label="Navegação">
+  <a href="#inicio" data-p="inicio"><span class="spr" data-s="plane" data-px="2"></span><b>Início</b></a>
+  <a href="#listas" data-p="listas"><span class="spr" data-s="bagshop" data-px="2"></span><b>Listas</b></a>
+  <a href="#passeios" data-p="passeios"><span class="spr" data-s="heart" data-px="3"></span><b>Passeios</b></a>
+  <a href="#saber" data-p="saber"><span class="spr" data-s="mountain" data-px="2"></span><b>Bom saber</b></a>
+</nav>
 
 <script>
 /* ======================================================
@@ -852,6 +877,17 @@ function renderPick(){
   el.innerHTML=`<p>${esc.length} ${esc.length===1?"passeio escolhido":"passeios escolhidos"} ♥</p><a href="${url}" target="_blank" rel="noopener">Mandar pro Gabriel no WhatsApp</a>`;
 }
 renderChips();renderLugares();renderPick();
+
+/* ---------- navegação ---------- */
+const PAGES=["inicio","listas","passeios","saber"];
+function route(scroll){
+  const h=location.hash.slice(1),id=PAGES.includes(h)?h:"inicio";
+  PAGES.forEach(p=>document.getElementById(p).classList.toggle("on",p===id));
+  document.querySelectorAll("#tabs a").forEach(a=>{const on=a.dataset.p===id;a.classList.toggle("on",on);on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
+  if(scroll)window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",()=>route(true));
+route(false);
 pull();setInterval(pull,15000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
 
