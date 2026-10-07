@@ -159,11 +159,12 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
 .place .tag{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal)}
 .place .tag em{font-style:normal;color:var(--pink)}
 .place p{font-size:16px;color:#3d4058;margin-top:2px}
-.love{flex:none;width:52px;height:52px;border:2px solid var(--ink);border-radius:50%;background:#fff;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.love svg{opacity:.25;filter:grayscale(1)}
-.love.on{background:#ffe0ef;border-color:var(--pink)}
-.love.like.on{background:#fff0c2;border-color:var(--ink)}
-.votes{display:flex;flex-direction:column;gap:8px}
+.place .media{position:relative}
+.votes{position:absolute;right:10px;bottom:10px;display:flex;gap:8px;z-index:2}
+.love{display:flex;align-items:center;gap:6px;height:42px;padding:0 14px 0 10px;border:2px solid var(--ink);border-radius:21px;background:#fff;color:var(--ink);font:800 15px "Nunito",sans-serif;cursor:pointer;box-shadow:2px 2px 0 var(--ink);-webkit-tap-highlight-color:transparent}
+.love svg{opacity:.3;filter:grayscale(1)}
+.love.on{background:#ffe0ef;border-color:var(--pink);box-shadow:2px 2px 0 var(--pink)}
+.love.like.on{background:#fff0c2;border-color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
 .love.on svg{opacity:1;filter:none}
 .place.chosen{border-color:var(--pink);box-shadow:3px 3px 0 var(--pink)}
 .end{margin-top:40px;padding:22px 18px;text-align:center}
@@ -228,7 +229,7 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
   <div class="page" id="passeios">
   <section>
     <h2>PASSEIOS</h2>
-    <p class="lead">Veja os vídeos e toque no coração do que quiser fazer.</p>
+    <p class="lead">Em cada foto, toque em <b>Gostei</b> (estrela) ou <b>Quero muito</b> (coração).</p>
     <div class="chips" id="chips"></div>
     <div id="lugares"></div>
   </section>
@@ -536,17 +537,18 @@ medkit:[
 "kwwwwRRwwwwk",
 "kwwwwwwwwwwk",
 "kkkkkkkkkkkk"],
-thumb:[
-"....kk....",
-"...kyk....",
-"...kyk....",
-"kk.kyykkk.",
-"kyykyyyyyk",
-"kyyyyyyyyk",
-"kyyyyyyyyk",
-"kyyyyyyyyk",
-".kyyyyyyk.",
-"..kkkkkk.."],
+star:[
+".....k.....",
+"....kyk....",
+"....kyk....",
+"kkkkyyykkkk",
+"kyyyyyyyyyk",
+".kyyyyyyyk.",
+"..kyyyyyk..",
+"..kyyyyyk..",
+".kyyykyyyk.",
+".kyyk.kyyk.",
+".kkk...kkk."],
 heart:[
 ".kk.kk.",
 "kppkppk",
@@ -867,12 +869,12 @@ function renderLugares(){
   box.innerHTML=LUGARES.filter(l=>filtro==="todos"||l.tipo===filtro).map(l=>{
     const on=!!state["l_"+l.id],gos=!!state["k_"+l.id];
     return `<article class="card place ${on?"chosen":""}">
-      <div class="media">${midia(l)}</div>
+      <div class="media">${midia(l)}
+        <div class="votes"><button type="button" class="love like ${gos?"on":""}" data-l="${l.id}" data-k="k_" aria-pressed="${gos}" aria-label="Gostei: ${l.nome}">${spr("star",2)}Gostei</button>
+        <button type="button" class="love ${on?"on":""}" data-l="${l.id}" data-k="l_" aria-pressed="${on}" aria-label="Quero muito ir: ${l.nome}">${spr("heart",3)}Quero muito</button></div></div>
       <div class="info"><div>
         <div class="tag">${TIPOS[l.tipo]}${l.quando?` · <em>${l.quando}</em>`:""}</div>
         <h3>${l.nome}</h3><p>${l.texto}</p></div>
-        <div class="votes"><button type="button" class="love like ${gos?"on":""}" data-l="${l.id}" data-k="k_" aria-pressed="${gos}" aria-label="Gostei: ${l.nome}">${spr("thumb",4)}</button>
-        <button type="button" class="love ${on?"on":""}" data-l="${l.id}" data-k="l_" aria-pressed="${on}" aria-label="Quero muito ir: ${l.nome}">${spr("heart",4)}</button></div>
       </div></article>`}).join("");
   box.querySelectorAll(".love").forEach(b=>b.addEventListener("click",()=>{
     const id=b.dataset.l,k=b.dataset.k+id,o=(b.dataset.k==="l_"?"k_":"l_")+id,v=!state[k];
