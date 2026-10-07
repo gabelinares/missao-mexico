@@ -57,6 +57,8 @@ h1{font-family:"PS2P";font-size:26px;line-height:1.35;color:var(--pink);text-sha
 .count .txt b{font-weight:800}
 .prog{margin-top:14px;font-size:15px;color:var(--soft);font-weight:600}
 .bar{height:10px;border-radius:5px;background:var(--line);margin-top:6px;overflow:hidden}
+.syncst{margin-top:8px;font-size:13px;font-weight:700;color:var(--green)}
+.syncst.bad{color:#c1121f}
 .bar i{display:block;height:100%;background:var(--green);border-radius:5px;transition:width .3s}
 
 /* NEXT STEP */
@@ -186,6 +188,7 @@ details.acc .in{padding:0 16px 16px;font-size:16px;color:#3d4058}
     <div class="txt" id="cdl"><b>dias pra decolar</b><br>Ida qua 28/out · volta qua 4/nov</div>
   </div>
   <div class="prog"><span id="progt"></span><div class="bar"><i id="bar"></i></div></div>
+  <div class="syncst" id="sync"></div>
 
   <div class="card next" id="next"></div>
 
@@ -708,7 +711,37 @@ function paint(root){
 /* ---------- storage ---------- */
 const KEY="missao-mexico-v4";let state={};
 try{state=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){state={}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+const pending={};let flushT=null;
+function setSync(ok){const el=document.getElementById("sync");if(el){el.textContent=ok?"☁ salvo e compartilhado":"⚠ sem conexão, salvo só neste celular por enquanto";el.className="syncst"+(ok?"":" bad")}}
+function save(k){
+  try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+  if(k!==undefined){pending[k]=state[k];clearTimeout(flushT);flushT=setTimeout(flush,300)}
+}
+function merge(remote){
+  let ch=false;
+  for(const k in remote){if(k in pending)continue;if(state[k]!==remote[k]){state[k]=remote[k];ch=true}}
+  if(ch){save();syncUI()}
+}
+async function flush(){
+  const patch={...pending};if(!Object.keys(patch).length)return;
+  try{
+    const r=await fetch("/api/state",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({patch})});
+    if(!r.ok)throw new Error(r.status);
+    const j=await r.json();
+    for(const k in patch)if(pending[k]===patch[k])delete pending[k];
+    merge(j.state);setSync(true);
+  }catch(e){setSync(false);clearTimeout(flushT);flushT=setTimeout(flush,5000)}
+}
+async function pull(){
+  if(Object.keys(pending).length)return flush();
+  try{
+    const r=await fetch("/api/state",{cache:"no-store"});
+    if(!r.ok)throw new Error(r.status);
+    merge((await r.json()).state);setSync(true);
+  }catch(e){setSync(false)}
+}
+const listRefresh=[];
+function syncUI(){renderFases();listRefresh.forEach(f=>f());renderLugares();renderPick()}
 
 /* ---------- dates ---------- */
 function todayISO(){try{return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}catch(e){return new Date().toISOString().slice(0,10)}}
@@ -751,7 +784,7 @@ function renderFases(){
   paint(next);
   document.querySelectorAll("input[data-f]").forEach(i=>{
     i.addEventListener("click",e=>e.stopPropagation());
-    i.addEventListener("change",()=>{state["f_"+i.dataset.f]=i.checked;save();renderFases()});
+    i.addEventListener("change",()=>{state["f_"+i.dataset.f]=i.checked;save("f_"+i.dataset.f);renderFases()});
   });
   box.querySelectorAll("details.step").forEach(d=>d.addEventListener("toggle",()=>{if(d.open)openId=d.dataset.id}));
 }
@@ -771,10 +804,11 @@ document.querySelectorAll("[data-list]").forEach(el=>{
   items.forEach((t,i)=>{
     const l=document.createElement("label");l.className="ck";
     l.innerHTML=`<input type="checkbox" ${state[key+i]?"checked":""}><span>${t}</span>${mode==="tem"?"<em></em>":""}`;
-    l.querySelector("input").addEventListener("change",e=>{state[key+i]=e.target.checked;save();upd()});
+    l.querySelector("input").addEventListener("change",e=>{state[key+i]=e.target.checked;save(key+i);upd()});
     anchor?el.insertBefore(l,anchor):el.appendChild(l);
   });
   upd();
+  listRefresh.push(()=>{el.querySelectorAll(".ck input").forEach((inp,i)=>{inp.checked=!!state[key+i]});upd()});
 });
 
 /* ---------- passeios ---------- */
@@ -807,7 +841,7 @@ function renderLugares(){
         <button type="button" class="love ${on?"on":""}" data-l="${l.id}" aria-pressed="${on}" aria-label="Quero ir: ${l.nome}">${spr("heart",4)}</button>
       </div></article>`}).join("");
   box.querySelectorAll(".love").forEach(b=>b.addEventListener("click",()=>{
-    const k="l_"+b.dataset.l;state[k]=!state[k];save();renderLugares();renderPick()}));
+    const k="l_"+b.dataset.l;state[k]=!state[k];save(k);renderLugares();renderPick()}));
 }
 function renderPick(){
   const el=document.getElementById("pick"),esc=LUGARES.filter(l=>state["l_"+l.id]);
@@ -818,6 +852,8 @@ function renderPick(){
   el.innerHTML=`<p>${esc.length} ${esc.length===1?"passeio escolhido":"passeios escolhidos"} ♥</p><a href="${url}" target="_blank" rel="noopener">Mandar pro Gabriel no WhatsApp</a>`;
 }
 renderChips();renderLugares();renderPick();
+pull();setInterval(pull,15000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()});
 
 /* ---------- calendar ---------- */
 (function(){
